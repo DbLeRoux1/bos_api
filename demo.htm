@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script crossorigin src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script crossorigin src="https://unpkg.com/axios@0.18.0/dist/axios.min.js"></script>
+    <script crossorigin src="https://unpkg.com/jssha@2.3.1/src/sha.js"></script>
+    <title>Sample API Interactions</title>
+  </head>
+  <body>
+    <div id="render-element"></div>
+    <script type="text/babel">
+      class App extends React.Component {
+        constructor(params) {
+          super(params);
+          this.state = { clients: [] };
+        };
+
+        componentDidMount() {
+          const user = 'lazymeercat116';
+          const password = 'hottest';
+
+          const hmac = new jsSHA('SHA-256', 'TEXT');
+          hmac.setHMACKey(password, 'TEXT');
+          hmac.update(user);
+          hmac.update(Date.now().toString(36).substring(0, 4));
+
+          const token = `${hmac.getHMAC('HEX')}%${user}`;
+
+          const api = axios.create({
+            baseURL: 'http://45.77.58.134:8080',
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+
+          (async () => {
+            const res = await api.get('/clients');
+            const accounts = await api.get(`/accounts/${res.data[0]._id}`)
+            this.setState({clients: res.data});
+            console.log(accounts);
+          })();
+        };
+
+        render() {
+          return <ul>
+            {this.state.clients.map(x =>
+              <li key={x._id}>
+                {`${x.first} ${x.last} - ${x.id}`}
+              </li>
+            )}
+          </ul>;
+        }
+      }
+
+      ReactDOM.render(<App />, document.getElementById('render-element'));
+    </script>
+  </body>
+</html>
