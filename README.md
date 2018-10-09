@@ -23,6 +23,13 @@ Retrieve transactions for given accounts and search query.
 Search query is a regular expression. Specify `.*` for all transactions.
 from and to are optional, which should be javascript unix time stamps.
 
+Examples:
+```
+http://api.url/transactions/4d57aa2f-a0fb-39d7-b6ca-e584a7bc5324/.*
+http://api.url/transactions/4d57aa2f-a0fb-39d7-b6ca-e584a7bc5324/.*/1539074878074
+http://api.url/transactions/4d57aa2f-a0fb-39d7-b6ca-e584a7bc5324/.*/1539074878074/1539074784664
+```
+
 ## POST /transactions
 Post a new transaction, requires a body object as below.
 
@@ -35,4 +42,18 @@ Post a new transaction, requires a body object as below.
   "amount": Cents (integer),
   "ref": Reference Text
 }
+```
+# Authentication
+See `demo.htm`:
+
+```
+const user = 'lazymeercat116';
+const password = 'hottest';
+
+const hmac = new jsSHA('SHA-256', 'TEXT');
+hmac.setHMACKey(password, 'TEXT');
+hmac.update(user);
+hmac.update(Date.now().toString(36).substring(0, 4));
+
+const token = `${hmac.getHMAC('HEX')}%${user}`;
 ```
