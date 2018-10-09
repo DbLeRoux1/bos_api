@@ -55,6 +55,20 @@ http://api.url/transactions/4d57aa2f-a0fb-39d7-b6ca-e584a7bc5324/.*/153907487807
 http://api.url/transactions/4d57aa2f-a0fb-39d7-b6ca-e584a7bc5324/.*/1539074878074/1539074784664
 ```
 
+Example transaction object:
+```
+[{
+  "_id": "a43a1e1e-d0b5-3aa7-b063-73e42dd1c078",
+  "amount": 106124,
+  "balance": 106124,
+  "dest": "febec4ad-3472-41ac-b43a-d31591ea978f",
+  "ref": "402878",
+  "src": "4d57aa2f-a0fb-39d7-b6ca-e584a7bc5324",
+  "time": 1435533455204,
+  "type": "credit"
+}]
+```
+
 ## POST /transactions
 Post a new transaction, requires a body object as below.
 
