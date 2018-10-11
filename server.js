@@ -129,7 +129,7 @@ const UUID_NAMESPACE = "353ac1c0-cab3-11e8-9211-4f01514d4e40";
     async (req, res, next) => {
       if (!(req.body.type && req.body.src && req.body.dest && req.body.amount && req.body.ref ))
         return next(new errs.MissingParameterError("Missing transaction fields."));
-        
+
       if (req.body.time && (parseInt(req.body.time) <= Date.now()))
         return next(new errs.PreconditionFailedError("Invalid future transaction."));
 
@@ -161,6 +161,42 @@ const UUID_NAMESPACE = "353ac1c0-cab3-11e8-9211-4f01514d4e40";
       await trans_col.replaceOne({ _id: transaction._id }, transaction, { upsert: true });
 
       res.send(transaction);
+      next();
+  });
+
+  server.get('/generic/:id', // Get Generic Item by _id, owned by a single user.
+    Passport.authenticate('bearer', { session: false }),
+    async (req, res, next) => {
+      const collection = db.collection('generic');
+      const item = await collection.findOne({ username: req.user, _id: req.params.id })
+      if (!item) return next(new errs.NotAuthorizedError('Not Authorized.'));
+      res.send(item);
+      next();
+  });
+
+  server.post('/generic', // New generic item
+    Passport.authenticate('bearer', { session: false }),
+    async (req, res, next) => {
+      req.body.username = req.user;
+      req.body._id = uuidv3(`${Date.now()}:${req.user}`, UUID_NAMESPACE);
+
+      const collection = db.collection('generic');
+      const item = await collection.replaceOne({ _id: req.body._id }, req.body, { upsert: true });
+
+      res.send(item);
+      next();
+  });
+
+  server.del('/generic/:id', // Delete Generic Item by _id, owned by a single user.
+    Passport.authenticate('bearer', { session: false }),
+    async (req, res, next) => {
+      const collection = db.collection('generic');
+      const item = await collection.findOne({ username: req.user, _id: req.params.id })
+      if (!item) return next(new errs.NotAuthorizedError('Not Authorized.'));
+
+      await collection.deleteOne({ _id: req.params.id })
+
+      res.send(item);
       next();
   });
 

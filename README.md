@@ -82,6 +82,16 @@ Post a new transaction, requires a body object as below.
   "ref": Reference Text
 }
 ```
+
+## GET /generic/:id
+Return an arbitrary object by ID. Object must be owned by current user.
+
+## DELETE /generic/:id
+Delete and return an arbitrary object by ID. Object must be owned by current user.
+
+## POST /generic
+Create a new object (specified as body). Note that a username and \_id field will be computed automatically and will be replaced if they already exist.
+
 # Authentication
 See `demo.htm`:
 
@@ -96,3 +106,7 @@ hmac.update(Date.now().toString(36).substring(0, 4));
 
 const token = `${hmac.getHMAC('HEX')}%${user}`;
 ```
+
+# Generic API
+
+The generic API contains a subset of these API calls but on port 8081. Only the three `/generic` calls are available as well as the create user call (`\user`). The three generic calls are renamed `/item` in this variant.
